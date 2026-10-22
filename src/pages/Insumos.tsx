@@ -222,26 +222,27 @@ export default function Insumos() {
               ))}
             </select>
           </FormField>
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              label="Precio de compra"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.precio_compra}
-              onChange={(e) => setFormData({ ...formData, precio_compra: e.target.value })}
-              required
-            />
-            <FormField
-              label="Stock actual"
-              type="number"
-              step="0.0001"
-              min="0"
-              value={formData.stock_actual}
-              onChange={(e) => setFormData({ ...formData, stock_actual: e.target.value })}
-              required
-            />
-          </div>
+          <FormField
+            label="Precio de compra por unidad de medida"
+            type="number"
+            step="0.01"
+            min="0"
+            value={formData.precio_compra}
+            onChange={(e) => setFormData({ ...formData, precio_compra: e.target.value })}
+            required
+          />
+          <p className="text-xs text-gray-500 -mt-3 mb-4">
+            Este precio debe corresponder a una unidad de la medida seleccionada (ej: $ por kg, $ por litro).
+          </p>
+          <FormField
+            label="Stock actual"
+            type="number"
+            step="0.0001"
+            min="0"
+            value={formData.stock_actual}
+            onChange={(e) => setFormData({ ...formData, stock_actual: e.target.value })}
+            required
+          />
           <div className="flex items-center gap-2 mb-4">
             <input
               type="checkbox"

@@ -1,18 +1,22 @@
 import { NavLink } from 'react-router-dom';
-import { Calculator, Package, ClipboardList } from 'lucide-react';
+import { Calculator, Package, ClipboardList, Boxes, TrendingUp, DollarSign, Briefcase } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const menuItems = [
   { path: '/', label: 'Calculadora', icon: Calculator },
-  { path: '/insumos', label: 'Insumos', icon: Package },
+  { path: '/punto-equilibrio', label: 'Punto de equilibrio', icon: TrendingUp },
+  { path: '/recursos', label: 'Recursos', icon: Briefcase },
+  { path: '/precios-venta', label: 'Precios de venta', icon: DollarSign },
+  { path: '/productos', label: 'Productos', icon: Boxes },
   { path: '/recetas', label: 'Recetas', icon: ClipboardList },
+  { path: '/insumos', label: 'Insumos', icon: Package },
 ];
 
 export default function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
       <div className="p-6 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-primary-700">Calculadora</h1>
+        <h1 className="text-xl font-bold text-green-700">Maní Aburrá</h1>
         <p className="text-xs text-gray-500 mt-1">Requerimientos y costos</p>
       </div>
       <nav className="flex-1 p-4 space-y-1">

@@ -143,4 +143,27 @@ export const api = {
     comparacion: () => get<import('./types').ComparacionEstimadoReal[]>('/api/v1/reportes/comparacion-estimado-real'),
     costoReceta: (id: number) => get<import('./types').CostoEstimadoReceta>(`/api/v1/reportes/costo-receta/${id}`),
   },
+
+  // Recursos
+  recursos: {
+    list: () => get<import('./types').Recurso[]>('/api/v1/recursos/'),
+    create: (data: unknown) => post<import('./types').Recurso>('/api/v1/recursos/', data),
+    update: (id: number, data: unknown) => patch<import('./types').Recurso>(`/api/v1/recursos/${id}`, data),
+    delete: (id: number) => del(`/api/v1/recursos/${id}`),
+  },
+
+  // Precios de venta
+  preciosVenta: {
+    list: () => get<import('./types').PrecioVenta[]>('/api/v1/precios-venta/'),
+    activo: (productoId: number) => get<import('./types').PrecioVenta>(`/api/v1/precios-venta/producto/${productoId}`),
+    create: (data: unknown) => post<import('./types').PrecioVenta>('/api/v1/precios-venta/', data),
+    desactivar: (id: number) => patch<import('./types').PrecioVenta>(`/api/v1/precios-venta/${id}/desactivar`, {}),
+  },
+
+  // Punto de equilibrio
+  puntoEquilibrio: {
+    calcular: (data: unknown) => post<import('./types').PuntoEquilibrio>('/api/v1/punto-equilibrio/calcular', data),
+    list: () => get<import('./types').PuntoEquilibrio[]>('/api/v1/punto-equilibrio/'),
+    detail: (id: number) => get<import('./types').PuntoEquilibrio>(`/api/v1/punto-equilibrio/${id}`),
+  },
 };

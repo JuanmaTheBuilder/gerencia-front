@@ -256,3 +256,118 @@ export interface UnidadMedidaFormData {
   nombre: string;
   abreviatura: string;
 }
+
+// Costos estándar de producción asociados a una receta (persistencia local)
+export interface CostoPersonal {
+  id: string;
+  concepto: string;
+  horas: number;
+  costo_hora: number;
+}
+
+export interface CostoRecurso {
+  id: string;
+  concepto: string;
+  cantidad: number;
+  costo_unitario: number;
+}
+
+export interface RecetaCostosEstandar {
+  personal: CostoPersonal[];
+  recursos: CostoRecurso[];
+}
+
+// =====================================================
+// Recursos del negocio
+// =====================================================
+
+export type RecursoTipo = 'FISICO' | 'FINANCIERO' | 'HUMANO' | 'INTANGIBLE_NO_HUMANO';
+export type RecursoPeriodicidad = 'MENSUAL' | 'UNICO';
+
+export interface Recurso {
+  id: number;
+  nombre: string;
+  tipo: RecursoTipo;
+  periodicidad: RecursoPeriodicidad;
+  es_fijo: boolean;
+  monto: string;
+  descripcion?: string;
+  activo: boolean;
+}
+
+export interface RecursoFormData {
+  nombre: string;
+  tipo: RecursoTipo;
+  periodicidad: RecursoPeriodicidad;
+  es_fijo: boolean;
+  monto: string;
+  descripcion: string;
+  activo: boolean;
+}
+
+// =====================================================
+// Precios de venta
+// =====================================================
+
+export interface PrecioVenta {
+  id: number;
+  producto_id: number;
+  receta_id?: number;
+  precio_con_iva: string;
+  iva_porcentaje: string;
+  fecha_inicio: string;
+  activo: boolean;
+}
+
+export interface PrecioVentaFormData {
+  producto_id: string;
+  receta_id: string;
+  precio_con_iva: string;
+}
+
+// =====================================================
+// Punto de equilibrio
+// =====================================================
+
+export interface PuntoEquilibrioProductoInput {
+  producto_id: number;
+  receta_id?: number;
+  peso_venta: number;
+}
+
+export interface PuntoEquilibrioInput {
+  periodo_mes: number;
+  periodo_anio: number;
+  meta_unidades: number;
+  tasa_iva: number;
+  productos: PuntoEquilibrioProductoInput[];
+}
+
+export interface PuntoEquilibrioDetalle {
+  id: number;
+  producto_id: number;
+  receta_id?: number;
+  peso_venta: string;
+  precio_con_iva: string;
+  precio_sin_iva: string;
+  costo_variable_unitario: string;
+  margen_contribucion_unitario: string;
+  unidades_equilibrio: string;
+}
+
+export interface PuntoEquilibrio {
+  id: number;
+  periodo_mes: number;
+  periodo_anio: number;
+  fecha_calculo: string;
+  tasa_iva: string;
+  costos_fijos_mensuales: string;
+  inversion_inicial_total: string;
+  meta_unidades: string;
+  unidades_equilibrio: string;
+  ventas_equilibrio_pesos: string;
+  utilidad_estimada: string;
+  estado: 'BIEN' | 'MAL';
+  diagnostico: string;
+  detalles: PuntoEquilibrioDetalle[];
+}

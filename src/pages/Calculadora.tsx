@@ -1,12 +1,23 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Calculator, AlertTriangle, CheckCircle, Package, DollarSign, Percent } from 'lucide-react';
+import { Calculator, AlertTriangle, CheckCircle, Package, DollarSign, Percent, Users, Wrench } from 'lucide-react';
 import { api } from '../api/client';
 import { useApi } from '../hooks/useApi';
 import DataTable from '../components/DataTable';
-import type { Receta, RecetaDetail, Insumo } from '../api/types';
+import type { Receta, RecetaDetail, Insumo, RecetaCostosEstandar } from '../api/types';
 
 const MARGEN_DEFAULT = 30;
 const IVA_DEFAULT = 21;
+const COSTOS_KEY = (recetaId: number) => `receta_costos_${recetaId}`;
+
+function loadCostos(recetaId: number): RecetaCostosEstandar {
+  try {
+    const raw = localStorage.getItem(COSTOS_KEY(recetaId));
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // ignore
+  }
+  return { personal: [], recursos: [] };
+}
 
 export default function Calculadora() {
   const { data: recetas, loading: loadingRecetas, error: errorRecetas } = useApi(api.recetas.list);
@@ -48,6 +59,11 @@ export default function Calculadora() {
   const margenNum = parseFloat(margenUtilidad) || 0;
   const ivaNum = parseFloat(iva) || 0;
 
+  const costosEstandar = useMemo(() => {
+    if (!selectedRecetaId) return { personal: [], recursos: [] };
+    return loadCostos(parseInt(selectedRecetaId));
+  }, [selectedRecetaId]);
+
   const rows = useMemo(() => {
     if (!recetaDetail || !insumos) return [];
     return recetaDetail.recetas_insumos.map((ri) => {
@@ -73,7 +89,17 @@ export default function Calculadora() {
     });
   }, [recetaDetail, insumos, cantidadNum]);
 
-  const costoTotal = useMemo(() => rows.reduce((sum, r) => sum + r.costo, 0), [rows]);
+  const costoMateriales = useMemo(() => rows.reduce((sum, r) => sum + r.costo, 0), [rows]);
+  const costoPersonal = useMemo(
+    () => costosEstandar.personal.reduce((sum, c) => sum + c.horas * c.costo_hora * cantidadNum, 0),
+    [costosEstandar.personal, cantidadNum]
+  );
+  const costoRecursos = useMemo(
+    () => costosEstandar.recursos.reduce((sum, c) => sum + c.cantidad * c.costo_unitario * cantidadNum, 0),
+    [costosEstandar.recursos, cantidadNum]
+  );
+
+  const costoTotal = costoMateriales + costoPersonal + costoRecursos;
   const costoUnitario = cantidadNum > 0 ? costoTotal / cantidadNum : 0;
 
   const maxProducible = useMemo(() => {
@@ -97,16 +123,20 @@ export default function Calculadora() {
   const gananciaUnitaria = precioVentaSinIva - costoUnitario;
 
   const hayFaltante = rows.some((r) => r.falta > 0);
+  const faltanCostosExtras = selectedRecetaId && costosEstandar.personal.length === 0 && costosEstandar.recursos.length === 0;
 
   const loading = loadingRecetas || loadingInsumos || loadingDetail;
   const error = errorRecetas || errorInsumos;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
         <Calculator className="w-7 h-7 text-primary-600" />
         Calculadora de producción
       </h1>
+      <p className="text-sm text-gray-500 mb-6">
+        Seleccioná un producto/receta y la cantidad a producir para calcular insumos, stock y costos completos.
+      </p>
 
       {error && (
         <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-lg">
@@ -118,16 +148,16 @@ export default function Calculadora() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Versión del producto
+              Receta / versión del producto
             </label>
             <select
               value={selectedRecetaId}
               onChange={(e) => setSelectedRecetaId(e.target.value)}
               className="w-full"
             >
-              <option value="">Seleccionar versión...</option>
+              <option value="">Seleccionar receta...</option>
               {recetas?.map((r: Receta) => (
-                <option key={r.id} value={r.id}>{r.nombre}</option>
+                <option key={r.id} value={r.id}>{r.nombre} (v{r.version})</option>
               ))}
             </select>
           </div>
@@ -180,56 +210,92 @@ export default function Calculadora() {
         </div>
 
         {selectedRecetaId && recetaDetail && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-primary-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">Costo total</p>
-              <p className="text-2xl font-bold text-primary-700">${costoTotal.toFixed(2)}</p>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="bg-primary-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600">Costo total estimado</p>
+                <p className="text-2xl font-bold text-primary-700">${costoTotal.toFixed(2)}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600">Costo por unidad</p>
+                <p className="text-2xl font-bold text-gray-900">${costoUnitario.toFixed(2)}</p>
+              </div>
+              <div className={`rounded-lg p-4 ${hayFaltante ? 'bg-red-50' : 'bg-green-50'}`}>
+                <p className="text-sm text-gray-600">Máximo con stock actual</p>
+                <p className={`text-2xl font-bold ${hayFaltante ? 'text-red-700' : 'text-green-700'}`}>
+                  {maxProducible === Infinity ? '—' : maxProducible} uds
+                </p>
+              </div>
+              <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
+                <p className="text-sm text-emerald-700 flex items-center gap-1">
+                  <DollarSign className="w-4 h-4" />
+                  Precio sugerido (sin IVA)
+                </p>
+                <p className="text-2xl font-bold text-emerald-800">${precioVentaSinIva.toFixed(2)}</p>
+              </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">Costo por unidad</p>
-              <p className="text-2xl font-bold text-gray-900">${costoUnitario.toFixed(2)}</p>
-            </div>
-            <div className={`rounded-lg p-4 ${hayFaltante ? 'bg-red-50' : 'bg-green-50'}`}>
-              <p className="text-sm text-gray-600">Máximo con stock actual</p>
-              <p className={`text-2xl font-bold ${hayFaltante ? 'text-red-700' : 'text-green-700'}`}>
-                {maxProducible === Infinity ? '—' : maxProducible} uds
-              </p>
-            </div>
-            <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
-              <p className="text-sm text-emerald-700 flex items-center gap-1">
-                <DollarSign className="w-4 h-4" />
-                Precio sugerido (sin IVA)
-              </p>
-              <p className="text-2xl font-bold text-emerald-800">${precioVentaSinIva.toFixed(2)}</p>
-            </div>
-          </div>
-        )}
 
-        {selectedRecetaId && recetaDetail && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5">
-            <h3 className="text-lg font-semibold text-emerald-900 mb-4 flex items-center gap-2">
-              <DollarSign className="w-5 h-5" />
-              Precio de venta sugerido
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-emerald-700 mb-1">Costo unitario</p>
-                <p className="text-xl font-semibold text-emerald-900">${costoUnitario.toFixed(2)}</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1">Materiales</p>
+                <p className="text-xl font-bold text-gray-900">${costoMateriales.toFixed(2)}</p>
+                <p className="text-xs text-gray-500">
+                  ${cantidadNum > 0 ? (costoMateriales / cantidadNum).toFixed(2) : '0.00'} / unidad
+                </p>
               </div>
-              <div>
-                <p className="text-sm text-emerald-700 mb-1">Ganancia por unidad</p>
-                <p className="text-xl font-semibold text-emerald-900">${gananciaUnitaria.toFixed(2)}</p>
-                <p className="text-xs text-emerald-600">Margen del {margenNum}%</p>
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" />
+                  Personal
+                </p>
+                <p className="text-xl font-bold text-gray-900">${costoPersonal.toFixed(2)}</p>
+                <p className="text-xs text-gray-500">
+                  ${cantidadNum > 0 ? (costoPersonal / cantidadNum).toFixed(2) : '0.00'} / unidad
+                </p>
               </div>
-              <div>
-                <p className="text-sm text-emerald-700 mb-1">Precio final con IVA ({ivaNum}%)</p>
-                <p className="text-3xl font-bold text-emerald-800">${precioVentaConIva.toFixed(2)}</p>
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                  <Wrench className="w-3.5 h-3.5" />
+                  Recursos
+                </p>
+                <p className="text-xl font-bold text-gray-900">${costoRecursos.toFixed(2)}</p>
+                <p className="text-xs text-gray-500">
+                  ${cantidadNum > 0 ? (costoRecursos / cantidadNum).toFixed(2) : '0.00'} / unidad
+                </p>
               </div>
             </div>
-            <p className="text-xs text-emerald-600 mt-3">
-              Fórmula: costo unitario ÷ (1 − margen) × (1 + IVA)
-            </p>
-          </div>
+
+            {faltanCostosExtras && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                Aún no hay costos de personal o recursos configurados. Podés agregarlos en "Recetas"; mientras tanto, el cálculo solo incluye materiales.
+              </div>
+            )}
+
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5">
+              <h3 className="text-lg font-semibold text-emerald-900 mb-4 flex items-center gap-2">
+                <DollarSign className="w-5 h-5" />
+                Precio de venta sugerido
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-emerald-700 mb-1">Costo unitario</p>
+                  <p className="text-xl font-semibold text-emerald-900">${costoUnitario.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-emerald-700 mb-1">Ganancia por unidad</p>
+                  <p className="text-xl font-semibold text-emerald-900">${gananciaUnitaria.toFixed(2)}</p>
+                  <p className="text-xs text-emerald-600">Margen del {margenNum}%</p>
+                </div>
+                <div>
+                  <p className="text-sm text-emerald-700 mb-1">Precio final con IVA ({ivaNum}%)</p>
+                  <p className="text-3xl font-bold text-emerald-800">${precioVentaConIva.toFixed(2)}</p>
+                </div>
+              </div>
+              <p className="text-xs text-emerald-600 mt-3">
+                Fórmula: costo unitario ÷ (1 − margen) × (1 + IVA)
+              </p>
+            </div>
+          </>
         )}
       </div>
 
@@ -239,15 +305,15 @@ export default function Calculadora() {
         <div className="p-8 text-center bg-white rounded-lg shadow border border-gray-200">
           <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">
-            Seleccioná una versión y cantidad para calcular requerimientos.
+            Seleccioná una receta y cantidad para calcular requerimientos.
           </p>
           <p className="text-sm text-gray-400 mt-2">
-            Si no hay versiones, crealas en la pestaña "Recetas".
+            Si no hay recetas, creá productos y versiones en "Productos" y "Recetas".
           </p>
         </div>
       ) : !recetaDetail || recetaDetail.recetas_insumos.length === 0 ? (
         <div className="p-8 text-center bg-yellow-50 text-yellow-800 rounded-lg">
-          Esta versión no tiene insumos configurados. Agregalos en "Recetas".
+          Esta receta no tiene insumos configurados. Agregalos en "Recetas".
         </div>
       ) : (
         <>
@@ -302,12 +368,12 @@ export default function Calculadora() {
               },
               {
                 key: 'precio',
-                header: 'Precio',
+                header: 'Precio unitario',
                 render: (item) => `$${item.precio.toFixed(2)}`,
               },
               {
                 key: 'costo',
-                header: 'Costo',
+                header: 'Costo estimado',
                 render: (item) => `$${item.costo.toFixed(2)}`,
               },
             ]}
