@@ -8,7 +8,17 @@ import {
   TrendingUp, 
   DollarSign, 
   Briefcase,
-  Bean
+  Bean,
+  FileText,
+  Landmark,
+  LineChart,
+  Wallet,
+  Users,
+  Receipt,
+  Settings2,
+  Coins,
+  BarChart3,
+  Banknote
 } from 'lucide-react';
 
 interface MenuItem {
@@ -29,6 +39,26 @@ const menuSections: MenuSection[] = [
       { path: '/', label: 'Calculadora', icon: Calculator },
       { path: '/punto-equilibrio', label: 'Punto de equilibrio', icon: TrendingUp },
       { path: '/precios-venta', label: 'Precios de venta', icon: DollarSign },
+    ],
+  },
+  {
+    title: 'Plan de negocio',
+    items: [
+      { path: '/plan/supuestos', label: '1 · Datos y supuestos', icon: Settings2 },
+      { path: '/plan/inversiones', label: '2 · Inversiones', icon: Landmark },
+      { path: '/plan/demanda', label: '3 · Demanda y ventas', icon: Coins },
+      { path: '/plan/costos', label: '4 · Costos', icon: Wallet },
+      { path: '/plan/gastos', label: '5 · Gastos adm. y ventas', icon: Receipt },
+      { path: '/plan/nomina', label: '6 · Nómina', icon: Users },
+    ],
+  },
+  {
+    title: 'Resultados del plan',
+    items: [
+      { path: '/plan/pyg', label: '7 · Pérdidas y ganancias', icon: BarChart3 },
+      { path: '/plan/flujo', label: '8 · Flujo de caja', icon: Banknote },
+      { path: '/plan/evaluacion', label: '9 · Evaluación', icon: LineChart },
+      { path: '/plan/reporte', label: '10 · Reporte', icon: FileText },
     ],
   },
   {

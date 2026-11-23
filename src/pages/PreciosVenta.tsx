@@ -17,7 +17,6 @@ import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
 import Toast from '../components/Toast';
-import Badge from '../components/Badge';
 import type { PrecioVenta, PrecioVentaFormData, Producto, Receta } from '../api/types';
 
 export default function PreciosVenta() {

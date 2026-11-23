@@ -41,6 +41,34 @@ export async function del(path: string): Promise<void> {
   }
 }
 
+export async function download(path: string, fallbackName: string): Promise<void> {
+  const response = await fetch(`${API_URL}${path}`);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ detail: 'No se pudo generar el reporte' }));
+    throw new Error(errorData.detail || `Error ${response.status}`);
+  }
+  const blob = await response.blob();
+  const disposition = response.headers.get('Content-Disposition') || '';
+  const match = /filename="?([^";]+)"?/.exec(disposition);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = match ? match[1] : fallbackName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function put<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  return handleResponse<T>(response);
+}
+
 // Specific API endpoints
 export const api = {
   // Health
@@ -158,6 +186,21 @@ export const api = {
     activo: (productoId: number) => get<import('./types').PrecioVenta>(`/api/v1/precios-venta/producto/${productoId}`),
     create: (data: unknown) => post<import('./types').PrecioVenta>('/api/v1/precios-venta/', data),
     desactivar: (id: number) => patch<import('./types').PrecioVenta>(`/api/v1/precios-venta/${id}/desactivar`, {}),
+  },
+
+  // Plan de negocio y proyecciones
+  planes: {
+    list: () => get<import('../plan/types').PlanResumen[]>('/api/v1/planes/'),
+    create: (data: { nombre: string; empresa?: string; producto?: string }) =>
+      post<import('../plan/types').Plan>('/api/v1/planes/', data),
+    detail: (id: number) => get<import('../plan/types').Plan>(`/api/v1/planes/${id}`),
+    update: (id: number, datos: import('../plan/types').PlanDatos, nombre?: string) =>
+      put<import('../plan/types').Plan>(`/api/v1/planes/${id}`, { datos, nombre }),
+    delete: (id: number) => del(`/api/v1/planes/${id}`),
+    calcular: (datos: import('../plan/types').PlanDatos) =>
+      post<import('../plan/types').Resultados>('/api/v1/planes/calcular', datos),
+    reporte: (id: number, formato: 'xlsx' | 'pdf') =>
+      download(`/api/v1/planes/${id}/reporte?formato=${formato}`, `Plan.${formato}`),
   },
 
   // Punto de equilibrio

@@ -17,7 +17,6 @@ import { useToast } from '../hooks/useToast';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
 import Toast from '../components/Toast';
-import Badge from '../components/Badge';
 import type { Producto, Receta } from '../api/types';
 
 export default function Productos() {
