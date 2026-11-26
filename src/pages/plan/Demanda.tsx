@@ -4,7 +4,7 @@ import { api } from '../../api/client';
 import { useApi } from '../../hooks/useApi';
 import { usePlan } from '../../plan/PlanContext';
 import { conValor, dinero, porcentaje } from '../../plan/format';
-import { Boton, Calc, Card, Leyenda, Num, Pct, TablaAnual, Titulo } from '../../plan/ui';
+import { Boton, Calc, Card, Leyenda, Num, Pct, TablaAnual } from '../../plan/ui';
 import Modal from '../../components/Modal';
 
 export default function Demanda() {
@@ -22,7 +22,6 @@ export default function Demanda() {
 
   return (
     <>
-      <Titulo descripcion="Cuántas unidades vendes cada año, a qué precio y cómo se cobran.">3 · Demanda y ventas</Titulo>
       <Leyenda />
 
       <Card title="Cantidad y precio" action={

@@ -99,7 +99,7 @@ export default function Productos() {
   if (loading) {
     return (
       <div className="p-12 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 shadow-xs max-w-7xl mx-auto my-6">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600 mx-auto mb-3" />
+        <Loader2 className="w-8 h-8 animate-spin text-mani-600 mx-auto mb-3" />
         <p className="text-sm font-medium">Cargando productos...</p>
       </div>
     );
@@ -121,12 +121,12 @@ export default function Productos() {
       {/* Header de la Página */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-gray-100">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-mani-50 text-mani-600 border border-mani-100/80">
               <Boxes className="w-6 h-6" />
             </div>
             Productos
-          </h1>
+          </h2>
           <p className="text-sm text-gray-500 mt-1">
             Crea los productos finales y asócialos a sus recetas o versiones correspondientes.
           </p>
@@ -134,7 +134,7 @@ export default function Productos() {
 
         <button
           onClick={openCreate}
-          className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-emerald-600/15 transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 bg-mani-600 hover:bg-mani-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-mani-600/15 transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
           Nuevo producto
@@ -179,7 +179,7 @@ export default function Productos() {
               type="text"
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none font-medium"
               placeholder="Ej: Maní Aburrá Sal Marina y Limón 50g"
               required
             />
@@ -190,7 +190,7 @@ export default function Productos() {
               value={formData.descripcion}
               onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
               rows={3}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
               placeholder="Detalles sobre empaque, canal de venta o características..."
             />
           </FormField>
@@ -206,7 +206,7 @@ export default function Productos() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              className="px-5 py-2 bg-mani-600 hover:bg-mani-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-mani-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
             >
               {actionLoading ? (
                 <>
@@ -279,7 +279,7 @@ function AsociarRecetaForm({
     <form onSubmit={onAsociar} className="space-y-4 pt-1">
       {loadingAsociadas ? (
         <div className="flex items-center gap-2 text-sm text-gray-500 py-4">
-          <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+          <Loader2 className="w-4 h-4 animate-spin text-mani-600" />
           <span>Cargando recetas disponibles...</span>
         </div>
       ) : (
@@ -289,7 +289,7 @@ function AsociarRecetaForm({
             onChange={(e) => setRecetaParaAsociar(e.target.value)}
             required
             disabled={disponibles.length === 0}
-            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none disabled:opacity-50"
+            className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none disabled:opacity-50"
           >
             <option value="">Seleccionar receta...</option>
             {disponibles.map((r: Receta) => (
@@ -321,7 +321,7 @@ function AsociarRecetaForm({
         <button
           type="submit"
           disabled={actionLoading || !recetaParaAsociar}
-          className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+          className="px-5 py-2 bg-mani-600 hover:bg-mani-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-mani-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
         >
           {actionLoading ? (
             <>
@@ -359,7 +359,7 @@ function ProductoCard({
         {/* Header de la Tarjeta */}
         <div className="flex justify-between items-start mb-4 gap-3">
           <div className="flex items-start gap-3">
-            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80 shrink-0">
+            <div className="p-2.5 rounded-xl bg-mani-50 text-mani-600 border border-mani-100/80 shrink-0">
               <Package className="w-5 h-5" />
             </div>
             <div>
@@ -378,7 +378,7 @@ function ProductoCard({
           <div className="flex items-center gap-1 shrink-0">
             <button 
               onClick={onEdit} 
-              className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer" 
+              className="p-1.5 text-gray-400 hover:text-mani-600 hover:bg-mani-50 rounded-lg transition-colors cursor-pointer" 
               title="Editar producto"
             >
               <Pencil className="w-4 h-4" />
@@ -397,12 +397,12 @@ function ProductoCard({
         <div className="pt-2">
           <div className="flex items-center justify-between mb-2.5">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-              <ClipboardList className="w-4 h-4 text-emerald-600" />
+              <ClipboardList className="w-4 h-4 text-mani-600" />
               Recetas asociadas
             </h3>
             <button
               onClick={onAsociar}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50/60 hover:bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100/80 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-mani-600 hover:text-mani-700 bg-mani-50/60 hover:bg-mani-50 px-2.5 py-1 rounded-lg border border-mani-100/80 transition-all cursor-pointer"
             >
               <Link2 className="w-3.5 h-3.5" />
               Asociar receta
@@ -411,7 +411,7 @@ function ProductoCard({
 
           {loadingRecetas ? (
             <div className="flex items-center gap-2 text-xs text-gray-400 py-2">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-mani-600" />
               <span>Cargando recetas...</span>
             </div>
           ) : recetasAsociadas && recetasAsociadas.length > 0 ? (
@@ -419,7 +419,7 @@ function ProductoCard({
               {recetasAsociadas.map((r: Receta) => (
                 <div key={r.id} className="flex items-center justify-between text-xs bg-gray-50/80 rounded-xl px-3.5 py-2.5 border border-gray-100">
                   <span className="font-semibold text-gray-800">{r.nombre}</span>
-                  <span className="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                  <span className="font-mono text-[11px] font-semibold text-mani-700 bg-mani-50 px-2 py-0.5 rounded-md border border-mani-200/60">
                     v{r.version}
                   </span>
                 </div>

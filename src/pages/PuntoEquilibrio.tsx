@@ -104,27 +104,13 @@ export default function PuntoEquilibrio() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-10">
-      {/* Header de la Página */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-gray-100">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80">
-              <TrendingUp className="w-6 h-6" />
-            </div>
-            Punto de equilibrio
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Calcula cuántas unidades necesitas vender mensualmente para cubrir tus costos fijos y variables.
-          </p>
-        </div>
-      </div>
 
       {/* Rejilla de Formulario y Resultados */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         {/* Columna Izquierda: Configuración del Cálculo */}
         <div className="xl:col-span-6 bg-white rounded-2xl shadow-xs border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-6 pb-3 border-b border-gray-100">
-            <PieChart className="w-5 h-5 text-emerald-600" />
+            <PieChart className="w-5 h-5 text-mani-600" />
             <h2 className="text-base font-semibold text-gray-900">Configuración del cálculo</h2>
           </div>
 
@@ -139,7 +125,7 @@ export default function PuntoEquilibrio() {
                 <select
                   value={mes}
                   onChange={(e) => setMes(parseInt(e.target.value))}
-                  className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                  className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
                 >
                   {MESES.map((m, i) => (
                     <option key={i + 1} value={i + 1}>{m}</option>
@@ -155,7 +141,7 @@ export default function PuntoEquilibrio() {
                   type="number"
                   value={anio}
                   onChange={(e) => setAnio(parseInt(e.target.value) || new Date().getFullYear())}
-                  className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium"
+                  className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none font-medium"
                 />
               </div>
             </div>
@@ -172,7 +158,7 @@ export default function PuntoEquilibrio() {
                 step="1"
                 value={meta}
                 onChange={(e) => setMeta(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium"
+                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none font-medium"
                 placeholder="Ej: 5000"
                 required
               />
@@ -186,7 +172,7 @@ export default function PuntoEquilibrio() {
                 </label>
                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
                   pesoTotal === 1 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                    ? 'bg-mani-50 text-mani-700 border-mani-200' 
                     : 'bg-rose-50 text-rose-700 border-rose-200'
                 }`}>
                   Total: {(pesoTotal * 100).toFixed(0)}%
@@ -199,7 +185,7 @@ export default function PuntoEquilibrio() {
                     <select
                       value={row.producto_id}
                       onChange={(e) => updateMixRow(index, 'producto_id', e.target.value)}
-                      className="flex-1 min-w-0 bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
+                      className="flex-1 min-w-0 bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 outline-none"
                       required
                     >
                       <option value="">Producto...</option>
@@ -211,7 +197,7 @@ export default function PuntoEquilibrio() {
                     <select
                       value={row.receta_id}
                       onChange={(e) => updateMixRow(index, 'receta_id', e.target.value)}
-                      className="flex-1 min-w-0 bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
+                      className="flex-1 min-w-0 bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 outline-none"
                     >
                       <option value="">Presentación...</option>
                       {recetas?.map((r: Receta) => (
@@ -227,7 +213,7 @@ export default function PuntoEquilibrio() {
                         step="0.01"
                         value={row.peso}
                         onChange={(e) => updateMixRow(index, 'peso', e.target.value)}
-                        className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 font-mono text-center focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
+                        className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-xs text-gray-900 font-mono text-center focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 outline-none"
                         placeholder="0.60"
                         required
                       />
@@ -248,7 +234,7 @@ export default function PuntoEquilibrio() {
               <button
                 type="button"
                 onClick={addMixRow}
-                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50/60 hover:bg-emerald-50 border border-emerald-100/80 px-3 py-2 rounded-xl transition-all"
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-mani-600 hover:text-mani-700 bg-mani-50/60 hover:bg-mani-50 border border-mani-100/80 px-3 py-2 rounded-xl transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Agregar producto a la mezcla
@@ -259,7 +245,7 @@ export default function PuntoEquilibrio() {
             <button
               type="submit"
               disabled={actionLoading || pesoTotal !== 1}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-emerald-600/15 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              className="w-full py-3 bg-mani-600 hover:bg-mani-700 text-white font-semibold rounded-xl text-sm shadow-md shadow-mani-600/15 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
             >
               {actionLoading ? (
                 <>
@@ -280,12 +266,12 @@ export default function PuntoEquilibrio() {
               {/* Banner Estado Diagnóstico */}
               <div className={`p-4 rounded-2xl border ${
                 resultado.estado === 'BIEN' 
-                  ? 'bg-emerald-50/80 border-emerald-200/80' 
+                  ? 'bg-mani-50/80 border-mani-200/80' 
                   : 'bg-rose-50/80 border-rose-200/80'
               }`}>
                 <div className="flex items-start gap-3">
                   {resultado.estado === 'BIEN' ? (
-                    <div className="p-1.5 bg-emerald-100 rounded-xl text-emerald-700 shrink-0">
+                    <div className="p-1.5 bg-mani-100 rounded-xl text-mani-700 shrink-0">
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                   ) : (
@@ -296,7 +282,7 @@ export default function PuntoEquilibrio() {
                   <div>
                     <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-md mb-1 uppercase tracking-wide ${
                       resultado.estado === 'BIEN' 
-                        ? 'bg-emerald-200/60 text-emerald-900' 
+                        ? 'bg-mani-200/60 text-mani-900' 
                         : 'bg-rose-200/60 text-rose-900'
                     }`}>
                       {resultado.estado === 'BIEN' ? 'Proyecto Viable' : 'Atención Requerida'}
@@ -310,10 +296,10 @@ export default function PuntoEquilibrio() {
 
               {/* Grid KPI de Equilibrio */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-emerald-50/60 border border-emerald-100/80 rounded-2xl p-4">
-                  <p className="text-xs font-medium text-emerald-800">Unidades de equilibrio</p>
-                  <p className="text-2xl font-bold text-emerald-950 mt-1">
-                    {parseFloat(resultado.unidades_equilibrio).toFixed(0)} <span className="text-xs font-normal text-emerald-700">uds</span>
+                <div className="bg-mani-50/60 border border-mani-100/80 rounded-2xl p-4">
+                  <p className="text-xs font-medium text-mani-800">Unidades de equilibrio</p>
+                  <p className="text-2xl font-bold text-mani-950 mt-1">
+                    {parseFloat(resultado.unidades_equilibrio).toFixed(0)} <span className="text-xs font-normal text-mani-700">uds</span>
                   </p>
                 </div>
 
@@ -334,7 +320,7 @@ export default function PuntoEquilibrio() {
                 <div className="bg-gray-50/80 border border-gray-100 rounded-2xl p-4">
                   <p className="text-xs font-medium text-gray-600">Utilidad estimada</p>
                   <p className={`text-xl font-bold mt-1 ${
-                    parseFloat(resultado.utilidad_estimada) >= 0 ? 'text-emerald-700' : 'text-rose-700'
+                    parseFloat(resultado.utilidad_estimada) >= 0 ? 'text-mani-700' : 'text-rose-700'
                   }`}>
                     ${parseFloat(resultado.utilidad_estimada).toLocaleString('es-CO', { minimumFractionDigits: 2 })}
                   </p>
@@ -344,7 +330,7 @@ export default function PuntoEquilibrio() {
               {/* Desagregación por Producto */}
               <div className="space-y-3">
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <Package className="w-4 h-4 text-emerald-600" />
+                  <Package className="w-4 h-4 text-mani-600" />
                   Desagregación por producto
                 </h3>
                 
@@ -400,7 +386,7 @@ export default function PuntoEquilibrio() {
                         key: 'margen',
                         header: 'Margen',
                         render: (item) => (
-                          <span className="font-mono text-xs text-emerald-700 font-medium">
+                          <span className="font-mono text-xs text-mani-700 font-medium">
                             ${parseFloat(item.margen_contribucion_unitario).toLocaleString('es-CO', { minimumFractionDigits: 2 })}
                           </span>
                         ),
@@ -422,9 +408,9 @@ export default function PuntoEquilibrio() {
               </div>
 
               {/* Inversión Inicial Badge */}
-              <div className="p-3.5 bg-sky-50/80 border border-sky-100 rounded-xl text-sky-900 text-xs font-medium flex items-center justify-between">
+              <div className="p-3.5 bg-limon-50/80 border border-limon-100 rounded-xl text-limon-900 text-xs font-medium flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4 text-sky-600" />
+                  <DollarSign className="w-4 h-4 text-limon-600" />
                   Inversión inicial total
                 </span>
                 <span className="font-mono font-bold text-sm">
@@ -449,7 +435,7 @@ export default function PuntoEquilibrio() {
       {/* Sección Inferior: Historial de Cálculos */}
       <div className="bg-white rounded-2xl shadow-xs border border-gray-100 p-6 space-y-4">
         <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
-          <History className="w-5 h-5 text-emerald-600" />
+          <History className="w-5 h-5 text-mani-600" />
           <h2 className="text-base font-semibold text-gray-900">Historial de cálculos</h2>
         </div>
 
@@ -501,7 +487,7 @@ export default function PuntoEquilibrio() {
                 render: (item: PuntoEquilibrio) => (
                   <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                     item.estado === 'BIEN' 
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                      ? 'bg-mani-50 text-mani-700 border border-mani-200' 
                       : 'bg-rose-50 text-rose-700 border border-rose-200'
                   }`}>
                     {item.estado === 'BIEN' ? 'BIEN' : 'MAL'}

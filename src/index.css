@@ -1,24 +1,58 @@
 @import "tailwindcss";
 
+/*
+  Identidad: maní con sal y limón.
+  Verde profundo (marca), amarillo limón (acento), blanco (superficies).
+  Los textos siempre van en verde muy oscuro o gris oscuro sobre fondos claros.
+*/
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
+  --font-sans: "Rubik", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Rubik", ui-sans-serif, system-ui, sans-serif;
+
+  --color-mani-50: #f2fbef;
+  --color-mani-100: #e0f6d6;
+  --color-mani-200: #c2edae;
+  --color-mani-300: #94df7a;
+  --color-mani-400: #5cc94a;
+  --color-mani-500: #2fa832;
+  --color-mani-600: #1e8a24;
+  --color-mani-700: #186f1e;
+  --color-mani-800: #13571a;
+  --color-mani-900: #0b3d12;
+
+  --color-limon-50: #fffde7;
+  --color-limon-100: #fff9c4;
+  --color-limon-200: #fff59d;
+  --color-limon-300: #fff176;
+  --color-limon-400: #ffee58;
+  --color-limon-500: #fdd835;
+  --color-limon-600: #f5c400;
+  --color-limon-700: #b88a00;
+  --color-limon-800: #8a6700;
+  --color-limon-900: #4a3700;
+
   --color-primary-500: #3b82f6;
   --color-primary-600: #2563eb;
   --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
 }
 
 body {
-  @apply bg-gray-50 text-gray-900 antialiased;
+  background-color: #f7fbf2;
+  color: #1c2a20;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-input, select, textarea {
-  @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+input,
+select,
+textarea {
+  @apply border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mani-600 focus:border-transparent;
 }
 
 button {
@@ -27,4 +61,58 @@ button {
 
 button:disabled {
   @apply opacity-50 cursor-not-allowed;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-mani-800);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Reporte de indicadores: al imprimir solo queda el reporte, en blanco y sin saltos dentro de un bloque */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  #reporte-indicadores,
+  #reporte-indicadores * {
+    visibility: visible !important;
+  }
+
+  #reporte-indicadores {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #ffffff;
+  }
+
+  .reporte-bloque {
+    break-inside: avoid;
+  }
+
+  #reporte-indicadores button {
+    display: none !important;
+  }
 }

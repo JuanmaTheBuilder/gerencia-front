@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { usePlan } from '../../plan/PlanContext';
 import { conValor, dinero } from '../../plan/format';
-import { Boton, Calc, Card, Leyenda, Num, Pct, Titulo, Txt } from '../../plan/ui';
+import { Boton, Calc, Card, Leyenda, Num, Pct, Txt } from '../../plan/ui';
 import type { Area, Empleado, ParametrosNomina } from '../../plan/types';
 
 const AREAS: { v: Area; et: string }[] = [
@@ -61,9 +61,6 @@ export default function Nomina() {
 
   return (
     <>
-      <Titulo descripcion="Liquidación mensual de cada empleado: devengado, deducciones, prestaciones y aportes. Los totales por área alimentan la mano de obra y los gastos del plan.">
-        6 · Nómina
-      </Titulo>
       <Leyenda />
 
       <Card title="Empleados" subtitle="Horas extra y recargos se digitan en horas del mes. Incapacidades y comisiones, en pesos."
@@ -83,12 +80,12 @@ export default function Nomina() {
                   <tr key={i}>
                     <td className="px-1 py-1 sticky left-0 bg-white border-b border-gray-100"><Txt value={e.nombre} onChange={(v) => cambiar(i, { nombre: v })} /></td>
                     <td className="px-1 py-1 border-b border-gray-100">
-                      <select value={e.area} onChange={(ev) => cambiar(i, { area: ev.target.value as Area })} className="text-sm bg-sky-50 border-sky-200">
+                      <select value={e.area} onChange={(ev) => cambiar(i, { area: ev.target.value as Area })} className="text-sm bg-limon-50 border-limon-200">
                         {AREAS.map((a) => <option key={a.v} value={a.v}>{a.et}</option>)}
                       </select>
                     </td>
                     <td className="px-1 py-1 border-b border-gray-100">
-                      <select value={e.riesgo} onChange={(ev) => cambiar(i, { riesgo: ev.target.value })} className="text-sm bg-sky-50 border-sky-200">
+                      <select value={e.riesgo} onChange={(ev) => cambiar(i, { riesgo: ev.target.value })} className="text-sm bg-limon-50 border-limon-200">
                         {Object.keys(p.arl).map((r) => <option key={r} value={r}>{r}</option>)}
                       </select>
                     </td>
@@ -135,7 +132,7 @@ export default function Nomina() {
                       </tr>
                     );
                   })}
-                  <tr className="text-right font-semibold bg-emerald-50">
+                  <tr className="text-right font-semibold bg-mani-50">
                     <td className="px-2 py-2 text-left">TOTAL</td>
                     <td className="px-2 py-2">{dinero(nm.total_devengado)}</td><td /><td />
                     <td className="px-2 py-2">{dinero(nm.total_neto)}</td><td /><td /><td /><td />

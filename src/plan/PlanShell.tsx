@@ -8,7 +8,7 @@ const ESTADO = {
   idle: null,
   pendiente: { texto: 'Cambios sin guardar…', color: 'text-amber-600' },
   guardando: { texto: 'Guardando…', color: 'text-gray-500' },
-  guardado: { texto: 'Guardado', color: 'text-emerald-600' },
+  guardado: { texto: 'Guardado', color: 'text-mani-600' },
   error: { texto: 'No se pudo guardar', color: 'text-red-600' },
 } as const;
 

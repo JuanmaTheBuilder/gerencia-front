@@ -119,12 +119,12 @@ export default function Recursos() {
       {/* Header de la Página */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-gray-100">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-mani-50 text-mani-600 border border-mani-100/80">
               <Briefcase className="w-6 h-6" />
             </div>
             Recursos
-          </h1>
+          </h2>
           <p className="text-sm text-gray-500 mt-1">
             Registra y administra los costos fijos mensuales y la inversión inicial del negocio.
           </p>
@@ -132,7 +132,7 @@ export default function Recursos() {
 
         <button
           onClick={openCreate}
-          className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-emerald-600/15 transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 bg-mani-600 hover:bg-mani-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-mani-600/15 transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
           Nuevo recurso
@@ -149,9 +149,9 @@ export default function Recursos() {
 
       {/* Tarjetas KPI Superiores */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 shadow-xs">
-          <p className="text-xs font-medium text-emerald-800">Costos fijos mensuales</p>
-          <p className="text-2xl font-bold text-emerald-950 mt-1">
+        <div className="bg-mani-50/60 border border-mani-100 rounded-2xl p-5 shadow-xs">
+          <p className="text-xs font-medium text-mani-800">Costos fijos mensuales</p>
+          <p className="text-2xl font-bold text-mani-950 mt-1">
             ${fijosMensuales.toLocaleString('es-CO', { minimumFractionDigits: 2 })}
           </p>
         </div>
@@ -206,12 +206,12 @@ export default function Recursos() {
               render: (item: Recurso) => (
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
                   item.activo 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80' 
+                    ? 'bg-mani-50 text-mani-700 border-mani-200/80' 
                     : 'bg-rose-50 text-rose-700 border-rose-200/80'
                 }`}>
                   {item.activo ? (
                     <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-mani-600" />
                       Activo
                     </>
                   ) : (
@@ -230,7 +230,7 @@ export default function Recursos() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => openEdit(item)}
-                    className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                    className="p-1.5 text-gray-400 hover:text-mani-600 hover:bg-mani-50 rounded-lg transition-colors cursor-pointer"
                     title="Editar recurso"
                   >
                     <Pencil className="w-4 h-4" />
@@ -265,7 +265,7 @@ export default function Recursos() {
               type="text"
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none font-medium"
               placeholder="Ej: Arriendo Bodega"
               required
             />
@@ -275,7 +275,7 @@ export default function Recursos() {
             <select
               value={formData.tipo}
               onChange={(e) => setFormData({ ...formData, tipo: e.target.value as RecursoTipo })}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
               required
             >
               {TIPOS.map((t) => (
@@ -288,7 +288,7 @@ export default function Recursos() {
             <select
               value={formData.periodicidad}
               onChange={(e) => setFormData({ ...formData, periodicidad: e.target.value as RecursoPeriodicidad })}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
               required
             >
               {PERIODICIDADES.map((p) => (
@@ -304,7 +304,7 @@ export default function Recursos() {
                 id="es_fijo"
                 checked={formData.es_fijo}
                 onChange={(e) => setFormData({ ...formData, es_fijo: e.target.checked })}
-                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                className="w-4 h-4 rounded text-mani-600 focus:ring-mani-500 border-gray-300 cursor-pointer"
               />
               <label htmlFor="es_fijo" className="text-sm font-medium text-gray-700 cursor-pointer">
                 Es un costo fijo mensual
@@ -321,7 +321,7 @@ export default function Recursos() {
                 min="0"
                 value={formData.monto}
                 onChange={(e) => setFormData({ ...formData, monto: e.target.value })}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-gray-900 font-mono font-medium focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-gray-900 font-mono font-medium focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
                 placeholder="0.00"
                 required
               />
@@ -333,7 +333,7 @@ export default function Recursos() {
               value={formData.descripcion}
               onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
               rows={2}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
               placeholder="Detalles adicionales del recurso..."
             />
           </FormField>
@@ -344,7 +344,7 @@ export default function Recursos() {
               id="activo"
               checked={formData.activo}
               onChange={(e) => setFormData({ ...formData, activo: e.target.checked })}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300 cursor-pointer"
+              className="w-4 h-4 rounded text-mani-600 focus:ring-mani-500 border-gray-300 cursor-pointer"
             />
             <label htmlFor="activo" className="text-sm font-medium text-gray-700 cursor-pointer">
               Recurso activo
@@ -362,7 +362,7 @@ export default function Recursos() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              className="px-5 py-2 bg-mani-600 hover:bg-mani-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-mani-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
             >
               {actionLoading ? (
                 <>

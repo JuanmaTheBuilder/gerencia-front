@@ -2,7 +2,7 @@ import { AlertTriangle, Info } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { usePlan } from '../../plan/PlanContext';
 import { dinero, porcentaje } from '../../plan/format';
-import { Card, TablaAnual, Titulo } from '../../plan/ui';
+import { Card, TablaAnual } from '../../plan/ui';
 import type { Resultados } from '../../plan/types';
 
 function useR() {
@@ -21,7 +21,6 @@ export function Pyg() {
   });
   return (
     <>
-      <Titulo descripcion="Cuánto gana o pierde el negocio cada año. Todo se calcula con lo que llenaste en las pantallas anteriores.">7 · Pérdidas y ganancias</Titulo>
       <Card>
         <TablaAnual anios={r.anios} filas={[
           f('v', 'Ventas', py.ventas), f('cmv', '(−) Costo mercancía vendida', py.cmv), f('ub', '(=) Utilidad bruta', py.utilidad_bruta, true),
@@ -31,7 +30,6 @@ export function Pyg() {
           f('di', `Dividendos (${porcentaje(datos.pct_dividendos)})`, py.dividendos), f('uf', 'U. neta final', py.utilidad_final, true),
         ]} />
       </Card>
-      <Observaciones r={r} />
     </>
   );
 }
@@ -46,7 +44,6 @@ export function Flujo() {
   const datosGrafica = r.anios.map((a, t) => ({ anio: a, Ingresos: fl.ingresos[t], Egresos: fl.egresos[t], Efectivo: fl.efectivo[t] }));
   return (
     <>
-      <Titulo descripcion="Dinero que realmente entra y sale cada año. La inversión inicial aparece como año 0.">8 · Flujo de caja</Titulo>
       <Card>
         <TablaAnual anios={r.anios} filas={[
           f('i', 'Ventas de contado', fl.ingresos, true), f('mp', 'Pago MP de contado', fl.pago_mp_contado), f('mo', 'Mano de obra', fl.mano_obra),
@@ -62,12 +59,11 @@ export function Flujo() {
               <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
               <XAxis dataKey="anio" /><YAxis tickFormatter={(v) => `${Math.round(v / 1e6)} M`} />
               <Tooltip formatter={(v) => dinero(Number(v))} /><Legend />
-              <Bar dataKey="Ingresos" fill="#0ea5e9" /><Bar dataKey="Egresos" fill="#f59e0b" /><Bar dataKey="Efectivo" fill="#059669" />
+              <Bar dataKey="Ingresos" fill="#2FA832" /><Bar dataKey="Egresos" fill="#f59e0b" /><Bar dataKey="Efectivo" fill="#13571A" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
-      <Observaciones r={r} />
     </>
   );
 }
@@ -80,7 +76,6 @@ export function Evaluacion() {
   const datosGrafica = acumulado.map((v, i) => ({ anio: i === 0 ? 'Año 0' : String(r.anios[i - 1]), Acumulado: v }));
   return (
     <>
-      <Titulo descripcion="¿Vale la pena la inversión? Se compara la rentabilidad del proyecto con la tasa de oportunidad.">9 · Evaluación</Titulo>
       <div className="grid sm:grid-cols-3 gap-4 mb-5">
         <Indicador et="Tasa de oportunidad" v={porcentaje(ev.tasa)} />
         <Indicador et="TIR (tasa interna de retorno)" v={ev.tir === null ? 'No aplica' : porcentaje(ev.tir, 2)}
@@ -94,19 +89,18 @@ export function Evaluacion() {
               <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
               <XAxis dataKey="anio" /><YAxis tickFormatter={(v) => `${Math.round(v / 1e6)} M`} />
               <Tooltip formatter={(v) => dinero(Number(v))} />
-              <Line type="monotone" dataKey="Acumulado" stroke="#059669" strokeWidth={2} dot />
+              <Line type="monotone" dataKey="Acumulado" stroke="#13571A" strokeWidth={2} dot />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </Card>
-      <Observaciones r={r} />
     </>
   );
 }
 
 function Indicador({ et, v, nota }: { et: string; v: string; nota?: string }) {
   return (
-    <div className="rounded-xl bg-[#0E2841] text-white px-5 py-4">
+    <div className="rounded-xl bg-mani-900 text-white px-5 py-4">
       <p className="text-xs uppercase tracking-wide text-slate-300">{et}</p>
       <p className="text-3xl font-bold tabular-nums mt-1">{v}</p>
       {nota && <p className="text-xs text-slate-300 mt-1">{nota}</p>}
@@ -114,13 +108,13 @@ function Indicador({ et, v, nota }: { et: string; v: string; nota?: string }) {
   );
 }
 
-function Observaciones({ r }: { r: Resultados }) {
+export function Observaciones({ r }: { r: Resultados }) {
   if (r.observaciones.length === 0) return null;
   return (
     <Card title="Observaciones del modelo" subtitle="Solo informativas: explican cómo calcula la plantilla y qué conviene revisar. No cambian ningún número.">
       <ul className="space-y-2">
         {r.observaciones.map((o, i) => (
-          <li key={i} className={`flex gap-3 rounded-lg px-3 py-2.5 text-sm ${o.nivel === 'alerta' ? 'bg-amber-50 text-amber-900' : 'bg-sky-50 text-sky-900'}`}>
+          <li key={i} className={`flex gap-3 rounded-lg px-3 py-2.5 text-sm ${o.nivel === 'alerta' ? 'bg-amber-50 text-amber-900' : 'bg-limon-50 text-limon-900'}`}>
             {o.nivel === 'alerta' ? <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" /> : <Info className="w-4 h-4 mt-0.5 shrink-0" />}
             <span><b>{o.titulo}.</b> {o.texto}</span>
           </li>

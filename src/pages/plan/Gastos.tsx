@@ -2,7 +2,7 @@ import { Plus, Trash2, Users } from 'lucide-react';
 import { usePlan } from '../../plan/PlanContext';
 import { conValor, dinero } from '../../plan/format';
 import { conIpc, lineaVacia } from '../../plan/helpers';
-import { Boton, Card, Leyenda, Num, TablaAnual, Titulo, Txt } from '../../plan/ui';
+import { Boton, Card, Leyenda, Num, TablaAnual, Txt } from '../../plan/ui';
 import type { LineaAnual } from '../../plan/types';
 
 export default function Gastos() {
@@ -21,9 +21,6 @@ export default function Gastos() {
 
   return (
     <>
-      <Titulo descripcion="Nómina administrativa y de ventas, publicidad, comisiones y cualquier otro gasto. Las dos nóminas se pueden traer desde la pantalla de Nómina.">
-        5 · Gastos de administración y ventas
-      </Titulo>
       <Leyenda />
       <Card action={<Boton onClick={() => editar((d) => ({ ...d, gastos: [...d.gastos, lineaVacia()] }))}><Plus className="w-4 h-4" /> Agregar renglón</Boton>}>
         <TablaAnual anios={anios} cabeceraExtras={['Justificación / soporte']}
@@ -33,7 +30,7 @@ export default function Gastos() {
               etiqueta: (
                 <div className="flex items-center gap-1">
                   <Txt value={l.nombre} onChange={(v) => cambiar(i, { nombre: v })} />
-                  {l.origen && <button title="Traer desde nómina" className="p-1 text-emerald-600 hover:bg-emerald-50 rounded" onClick={() => traerNomina(i, l.origen!)}><Users className="w-4 h-4" /></button>}
+                  {l.origen && <button title="Traer desde nómina" className="p-1 text-mani-600 hover:bg-mani-50 rounded" onClick={() => traerNomina(i, l.origen!)}><Users className="w-4 h-4" /></button>}
                   <button title="Quitar" className="p-1 text-gray-400 hover:text-red-600" onClick={() => editar((d) => ({ ...d, gastos: d.gastos.filter((_, k) => k !== i) }))}><Trash2 className="w-4 h-4" /></button>
                 </div>),
               extras: [

@@ -1,7 +1,7 @@
 import { Plus, Trash2, Users } from 'lucide-react';
 import { usePlan } from '../../plan/PlanContext';
 import { conValor, dinero } from '../../plan/format';
-import { Boton, Calc, Card, Leyenda, Num, Titulo, Txt } from '../../plan/ui';
+import { Boton, Calc, Card, Leyenda, Num, Txt } from '../../plan/ui';
 
 export default function Inversiones() {
   const { datos, resultados, editar } = usePlan();
@@ -19,9 +19,6 @@ export default function Inversiones() {
 
   return (
     <>
-      <Titulo descripcion="Activos que hay que comprar para arrancar más el capital de trabajo de los tres primeros meses.">
-        2 · Inversiones
-      </Titulo>
       <Leyenda />
 
       <Card title="Activos" action={
@@ -67,7 +64,7 @@ export default function Inversiones() {
         </table>
       </Card>
 
-      <div className="rounded-xl bg-emerald-600 text-white px-5 py-4 flex items-center justify-between">
+      <div className="rounded-xl bg-mani-600 text-white px-5 py-4 flex items-center justify-between">
         <span className="font-medium">Inversión total (activos + capital de trabajo)</span>
         <span className="text-2xl font-bold tabular-nums">$ {dinero(resultados?.inversion.total)}</span>
       </div>

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Calculator, 
+import {  
   Percent, 
   DollarSign, 
   Users, 
@@ -19,8 +18,13 @@ import DataTable from '../components/DataTable';
 import type { Receta, RecetaDetail, Insumo, RecetaCostosEstandar } from '../api/types';
 
 const MARGEN_DEFAULT = 30;
-const IVA_DEFAULT = 21;
+const IVA_DEFAULT = 19;
+// Clave nueva para descartar el 21 % que la versión anterior dejaba guardado en el navegador
+const IVA_KEY = 'calculadora_iva_co';
 const COSTOS_KEY = (recetaId: number) => `receta_costos_${recetaId}`;
+
+// Evita faltantes fantasma por decimales binarios (0.3 / 0.1 = 2.9999999999999996)
+const redondear = (n: number) => Math.round(n * 1e6) / 1e6;
 
 function loadCostos(recetaId: number): RecetaCostosEstandar {
   try {
@@ -38,13 +42,14 @@ export default function Calculadora() {
   const [selectedRecetaId, setSelectedRecetaId] = useState('');
   const [recetaDetail, setRecetaDetail] = useState<RecetaDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [cantidad, setCantidad] = useState('1');
   const [margenUtilidad, setMargenUtilidad] = useState(() => {
     const saved = localStorage.getItem('calculadora_margen');
     return saved ? saved : MARGEN_DEFAULT.toString();
   });
   const [iva, setIva] = useState(() => {
-    const saved = localStorage.getItem('calculadora_iva');
+    const saved = localStorage.getItem(IVA_KEY);
     return saved ? saved : IVA_DEFAULT.toString();
   });
 
@@ -53,24 +58,38 @@ export default function Calculadora() {
   }, [margenUtilidad]);
 
   useEffect(() => {
-    localStorage.setItem('calculadora_iva', iva);
+    localStorage.setItem(IVA_KEY, iva);
   }, [iva]);
 
   useEffect(() => {
-    if (selectedRecetaId) {
-      setLoadingDetail(true);
-      api.recetas.detail(parseInt(selectedRecetaId))
-        .then(setRecetaDetail)
-        .catch(() => setRecetaDetail(null))
-        .finally(() => setLoadingDetail(false));
-    } else {
-      setRecetaDetail(null);
+    setRecetaDetail(null);
+    setErrorDetail(null);
+    if (!selectedRecetaId) {
+      setLoadingDetail(false);
+      return;
     }
+    // Si se cambia de receta antes de que llegue la respuesta, la anterior se ignora
+    let vigente = true;
+    setLoadingDetail(true);
+    api.recetas.detail(parseInt(selectedRecetaId))
+      .then((detalle) => {
+        if (vigente) setRecetaDetail(detalle);
+      })
+      .catch((err) => {
+        if (vigente) setErrorDetail(err instanceof Error ? err.message : 'Error desconocido');
+      })
+      .finally(() => {
+        if (vigente) setLoadingDetail(false);
+      });
+    return () => {
+      vigente = false;
+    };
   }, [selectedRecetaId]);
 
-  const cantidadNum = parseFloat(cantidad) || 0;
+  const cantidadNum = Math.max(0, parseFloat(cantidad) || 0);
   const margenNum = parseFloat(margenUtilidad) || 0;
-  const ivaNum = parseFloat(iva) || 0;
+  const margenValido = margenNum >= 0 && margenNum < 100;
+  const ivaNum = Math.max(0, parseFloat(iva) || 0);
 
   const costosEstandar = useMemo(() => {
     if (!selectedRecetaId) return { personal: [], recursos: [] };
@@ -84,7 +103,7 @@ export default function Calculadora() {
       const cantidadPorUnidad = parseFloat(ri.cantidad);
       const necesitas = cantidadPorUnidad * cantidadNum;
       const stock = parseFloat(insumo?.stock_actual || '0');
-      const falta = Math.max(0, necesitas - stock);
+      const falta = Math.max(0, redondear(necesitas - stock));
       const precio = parseFloat(insumo?.precio_compra || '0');
       const costo = necesitas * precio;
       return {
@@ -122,41 +141,27 @@ export default function Calculadora() {
       const stock = parseFloat(insumo?.stock_actual || '0');
       const cantidadPorUnidad = parseFloat(ri.cantidad);
       if (cantidadPorUnidad <= 0) return Infinity;
-      return Math.floor(stock / cantidadPorUnidad);
+      return Math.floor(redondear(stock / cantidadPorUnidad));
     });
     return Math.min(...posibles);
   }, [recetaDetail, insumos]);
 
   const margenDecimal = margenNum / 100;
   const ivaDecimal = ivaNum / 100;
-  const precioVentaSinIva = margenDecimal < 1 && costoUnitario > 0
+  const precioVentaSinIva = margenValido && costoUnitario > 0
     ? costoUnitario / (1 - margenDecimal)
     : 0;
   const precioVentaConIva = precioVentaSinIva * (1 + ivaDecimal);
-  const gananciaUnitaria = precioVentaSinIva - costoUnitario;
+  const gananciaUnitaria = precioVentaSinIva > 0 ? precioVentaSinIva - costoUnitario : 0;
 
   const hayFaltante = rows.some((r) => r.falta > 0);
   const faltanCostosExtras = selectedRecetaId && costosEstandar.personal.length === 0 && costosEstandar.recursos.length === 0;
 
   const loading = loadingRecetas || loadingInsumos || loadingDetail;
-  const error = errorRecetas || errorInsumos;
+  const error = errorRecetas || errorInsumos || errorDetail;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-10">
-      {/* Header de la Página */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-gray-100">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80">
-              <Calculator className="w-6 h-6" />
-            </div>
-            Calculadora de producción
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Selecciona una receta y define la cantidad para proyectar insumos, stock y costos de producción.
-          </p>
-        </div>
-      </div>
 
       {/* Banner de Error Global */}
       {error && (
@@ -179,7 +184,7 @@ export default function Calculadora() {
             <select
               value={selectedRecetaId}
               onChange={(e) => setSelectedRecetaId(e.target.value)}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
             >
               <option value="">Seleccionar receta...</option>
               {recetas?.map((r: Receta) => (
@@ -201,7 +206,7 @@ export default function Calculadora() {
               step="1"
               value={cantidad}
               onChange={(e) => setCantidad(e.target.value)}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none font-medium"
             />
           </div>
 
@@ -218,10 +223,13 @@ export default function Calculadora() {
                 step="0.01"
                 value={margenUtilidad}
                 onChange={(e) => setMargenUtilidad(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-3.5 pr-9 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium"
+                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-3.5 pr-9 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none font-medium"
               />
               <Percent className="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none" />
             </div>
+            {!margenValido && (
+              <p className="text-xs text-rose-600 mt-1.5">El margen debe estar entre 0 y 99,99 %.</p>
+            )}
           </div>
 
           {/* IVA */}
@@ -236,7 +244,7 @@ export default function Calculadora() {
                 step="0.01"
                 value={iva}
                 onChange={(e) => setIva(e.target.value)}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-3.5 pr-9 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium"
+                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-3.5 pr-9 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none font-medium"
               />
               <Percent className="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none" />
             </div>
@@ -249,9 +257,9 @@ export default function Calculadora() {
             {/* KPI Cards Principales */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Costo Total */}
-              <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4">
-                <p className="text-xs font-medium text-emerald-800">Costo total estimado</p>
-                <p className="text-2xl font-bold text-emerald-950 mt-1">
+              <div className="bg-mani-50/60 border border-mani-100 rounded-2xl p-4">
+                <p className="text-xs font-medium text-mani-800">Costo total estimado</p>
+                <p className="text-2xl font-bold text-mani-950 mt-1">
                   ${costoTotal.toFixed(2)}
                 </p>
               </div>
@@ -268,19 +276,19 @@ export default function Calculadora() {
               <div className={`border rounded-2xl p-4 ${
                 hayFaltante 
                   ? 'bg-rose-50/60 border-rose-100' 
-                  : 'bg-emerald-50/60 border-emerald-100'
+                  : 'bg-mani-50/60 border-mani-100'
               }`}>
                 <p className="text-xs font-medium text-gray-600">Máximo con stock actual</p>
                 <p className={`text-2xl font-bold mt-1 ${
-                  hayFaltante ? 'text-rose-700' : 'text-emerald-700'
+                  hayFaltante ? 'text-rose-700' : 'text-mani-700'
                 }`}>
                   {maxProducible === Infinity ? '—' : maxProducible} <span className="text-sm font-normal text-gray-500">uds</span>
                 </p>
               </div>
 
               {/* Precio sugerido sin IVA */}
-              <div className="bg-emerald-600 text-white rounded-2xl p-4 shadow-md shadow-emerald-600/10 flex flex-col justify-between">
-                <p className="text-xs font-medium text-emerald-100 flex items-center gap-1">
+              <div className="bg-mani-600 text-white rounded-2xl p-4 shadow-md shadow-mani-600/10 flex flex-col justify-between">
+                <p className="text-xs font-medium text-mani-100 flex items-center gap-1">
                   <DollarSign className="w-3.5 h-3.5" />
                   Sugerido (sin IVA)
                 </p>
@@ -295,7 +303,7 @@ export default function Calculadora() {
               <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-xs">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
-                    <Layers className="w-4 h-4 text-emerald-600" />
+                    <Layers className="w-4 h-4 text-mani-600" />
                     Materiales
                   </p>
                 </div>
@@ -308,7 +316,7 @@ export default function Calculadora() {
               <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-xs">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-emerald-600" />
+                    <Users className="w-4 h-4 text-mani-600" />
                     Personal
                   </p>
                 </div>
@@ -321,7 +329,7 @@ export default function Calculadora() {
               <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-xs">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
-                    <Wrench className="w-4 h-4 text-emerald-600" />
+                    <Wrench className="w-4 h-4 text-mani-600" />
                     Recursos
                   </p>
                 </div>
@@ -334,8 +342,8 @@ export default function Calculadora() {
 
             {/* Banner Informativo si faltan costos extras */}
             {faltanCostosExtras && (
-              <div className="p-4 bg-sky-50/80 border border-sky-100 rounded-2xl flex items-start gap-3 text-sky-900 text-sm">
-                <Info className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+              <div className="p-4 bg-limon-50/80 border border-limon-100 rounded-2xl flex items-start gap-3 text-limon-900 text-sm">
+                <Info className="w-5 h-5 text-limon-600 shrink-0 mt-0.5" />
                 <p>
                   Aún no hay costos de personal o recursos configurados. Puedes agregarlos en la sección <span className="font-semibold">"Recetas"</span>. Mientras tanto, el cálculo solo considera materiales.
                 </p>
@@ -343,34 +351,34 @@ export default function Calculadora() {
             )}
 
             {/* Resumen del Precio Final / Margen */}
-            <div className="bg-gradient-to-br from-emerald-900 to-emerald-950 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+            <div className="bg-gradient-to-br from-mani-900 to-mani-950 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-5">
                 <TrendingUp className="w-48 h-48 text-white" />
               </div>
-              <h3 className="text-base font-semibold text-emerald-100 mb-4 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-emerald-400" />
+              <h3 className="text-base font-semibold text-mani-100 mb-4 flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-mani-400" />
                 Precio de venta sugerido al público
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
                 <div>
-                  <p className="text-xs text-emerald-300 font-medium mb-1">Costo unitario</p>
+                  <p className="text-xs text-mani-300 font-medium mb-1">Costo unitario</p>
                   <p className="text-2xl font-bold text-white">${costoUnitario.toFixed(2)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-emerald-300 font-medium mb-1">Ganancia por unidad</p>
+                  <p className="text-xs text-mani-300 font-medium mb-1">Ganancia por unidad</p>
                   <p className="text-2xl font-bold text-white">${gananciaUnitaria.toFixed(2)}</p>
-                  <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-800/60 rounded text-[11px] text-emerald-200">
+                  <span className="inline-block mt-1 px-2 py-0.5 bg-mani-800/60 rounded text-[11px] text-mani-200">
                     Margen: {margenNum}%
                   </span>
                 </div>
                 <div>
-                  <p className="text-xs text-emerald-300 font-medium mb-1">Precio final con IVA ({ivaNum}%)</p>
-                  <p className="text-3xl font-extrabold text-emerald-400">${precioVentaConIva.toFixed(2)}</p>
+                  <p className="text-xs text-mani-300 font-medium mb-1">Precio final con IVA ({ivaNum}%)</p>
+                  <p className="text-3xl font-extrabold text-mani-400">${precioVentaConIva.toFixed(2)}</p>
                 </div>
               </div>
 
-              <p className="text-[11px] text-emerald-400/80 mt-4 font-mono relative z-10">
+              <p className="text-[11px] text-mani-400/80 mt-4 font-mono relative z-10">
                 Fórmula: costo unitario ÷ (1 − margen) × (1 + IVA)
               </p>
             </div>
@@ -381,7 +389,7 @@ export default function Calculadora() {
       {/* Sección Inferior: Estados o Tabla de Datos */}
       {loading ? (
         <div className="p-12 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 shadow-xs">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-600 border-t-transparent mx-auto mb-3" />
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-mani-600 border-t-transparent mx-auto mb-3" />
           <p className="text-sm font-medium">Calculando requerimientos...</p>
         </div>
       ) : !selectedRecetaId ? (
@@ -394,7 +402,13 @@ export default function Calculadora() {
             Selecciona una receta y la cantidad a producir arriba para calcular los insumos y verificar el stock.
           </p>
         </div>
-      ) : !recetaDetail || recetaDetail.recetas_insumos.length === 0 ? (
+      ) : error || !recetaDetail ? (
+        <div className="p-8 text-center bg-rose-50/80 border border-rose-200/80 rounded-2xl text-rose-900">
+          <AlertCircle className="w-8 h-8 text-rose-600 mx-auto mb-2" />
+          <p className="font-semibold">No se pudo cargar la información para calcular.</p>
+          <p className="text-sm text-rose-700 mt-1">Recarga la página para volver a intentarlo.</p>
+        </div>
+      ) : recetaDetail.recetas_insumos.length === 0 ? (
         <div className="p-8 text-center bg-amber-50/80 border border-amber-200/70 rounded-2xl text-amber-900">
           <AlertTriangle className="w-8 h-8 text-amber-600 mx-auto mb-2" />
           <p className="font-semibold">Esta receta no tiene insumos configurados.</p>
@@ -414,9 +428,9 @@ export default function Calculadora() {
               </div>
             </div>
           ) : (
-            <div className="p-4 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl flex items-center gap-3 shadow-xs">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-              <p className="text-sm text-emerald-900 font-medium">
+            <div className="p-4 bg-mani-50/80 border border-mani-200/80 rounded-2xl flex items-center gap-3 shadow-xs">
+              <CheckCircle2 className="w-5 h-5 text-mani-600 shrink-0" />
+              <p className="text-sm text-mani-900 font-medium">
                 ¡Stock disponible! Con el inventario actual puedes producir sin problemas <span className="font-bold">{cantidadNum} unidades</span>.
               </p>
             </div>
@@ -447,7 +461,7 @@ export default function Calculadora() {
                   key: 'falta',
                   header: 'Te falta',
                   render: (item) => (
-                    <span className={item.falta > 0 ? 'text-rose-600 font-semibold font-mono text-xs' : 'text-emerald-600 font-mono text-xs'}>
+                    <span className={item.falta > 0 ? 'text-rose-600 font-semibold font-mono text-xs' : 'text-mani-600 font-mono text-xs'}>
                       {item.falta > 0 ? item.falta.toFixed(4) : '—'}
                     </span>
                   ),

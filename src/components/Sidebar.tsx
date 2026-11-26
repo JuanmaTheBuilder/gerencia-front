@@ -1,160 +1,66 @@
 import { NavLink } from 'react-router-dom';
 import { clsx } from 'clsx';
-import { 
-  Calculator, 
-  Package, 
-  ClipboardList, 
-  Boxes, 
-  TrendingUp, 
-  DollarSign, 
-  Briefcase,
-  Bean,
-  FileText,
-  Landmark,
-  LineChart,
-  Wallet,
-  Users,
-  Receipt,
-  Settings2,
-  Coins,
-  BarChart3,
-  Banknote
-} from 'lucide-react';
+import { Bean, BarChart3, Boxes, Calculator, LayoutDashboard, Lightbulb, type LucideIcon } from 'lucide-react';
 
 interface MenuItem {
-  path: string;
+  to: string;
   label: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
+  end?: boolean;
 }
 
-interface MenuSection {
-  title?: string;
-  items: MenuItem[];
-}
-
-const menuSections: MenuSection[] = [
-  {
-    title: 'Análisis y Cálculos',
-    items: [
-      { path: '/', label: 'Calculadora', icon: Calculator },
-      { path: '/punto-equilibrio', label: 'Punto de equilibrio', icon: TrendingUp },
-      { path: '/precios-venta', label: 'Precios de venta', icon: DollarSign },
-    ],
-  },
-  {
-    title: 'Plan de negocio',
-    items: [
-      { path: '/plan/supuestos', label: '1 · Datos y supuestos', icon: Settings2 },
-      { path: '/plan/inversiones', label: '2 · Inversiones', icon: Landmark },
-      { path: '/plan/demanda', label: '3 · Demanda y ventas', icon: Coins },
-      { path: '/plan/costos', label: '4 · Costos', icon: Wallet },
-      { path: '/plan/gastos', label: '5 · Gastos adm. y ventas', icon: Receipt },
-      { path: '/plan/nomina', label: '6 · Nómina', icon: Users },
-    ],
-  },
-  {
-    title: 'Resultados del plan',
-    items: [
-      { path: '/plan/pyg', label: '7 · Pérdidas y ganancias', icon: BarChart3 },
-      { path: '/plan/flujo', label: '8 · Flujo de caja', icon: Banknote },
-      { path: '/plan/evaluacion', label: '9 · Evaluación', icon: LineChart },
-      { path: '/plan/reporte', label: '10 · Reporte', icon: FileText },
-    ],
-  },
-  {
-    title: 'Gestión y Catálogo',
-    items: [
-      { path: '/productos', label: 'Productos', icon: Boxes },
-      { path: '/recetas', label: 'Recetas', icon: ClipboardList },
-      { path: '/insumos', label: 'Insumos', icon: Package },
-      { path: '/recursos', label: 'Recursos', icon: Briefcase },
-    ],
-  },
+const MENU: MenuItem[] = [
+  { to: '/', label: 'Panel General', icon: LayoutDashboard, end: true },
+  { to: '/analisis', label: 'Análisis y cálculos', icon: Calculator },
+  { to: '/plan', label: 'Plan de negocio', icon: Lightbulb },
+  { to: '/resultados', label: 'Resultados del plan', icon: BarChart3 },
+  { to: '/gestion', label: 'Gestión y catálogo', icon: Boxes },
 ];
 
 export default function Sidebar() {
   return (
-    <aside className="w-64 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 select-none shadow-sm">
-      {/* Header del Sidebar */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-200">
-            <Bean className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900 tracking-tight leading-tight">
-              Maní Aburrá
-            </h1>
-            <p className="text-xs font-medium text-emerald-600 mt-0.5">
-              Requerimientos y costos
-            </p>
-          </div>
+    <aside className="shrink-0 flex flex-col bg-mani-900 text-white select-none md:h-screen md:w-64 md:sticky md:top-0 shadow-xl">
+      <div className="flex items-center gap-3 px-5 py-4 md:p-6 md:border-b md:border-white/10">
+        <div className="w-11 h-11 rounded-2xl bg-limon-400 text-mani-900 grid place-items-center shadow-lg shadow-black/20">
+          <Bean className="w-6 h-6" aria-hidden="true" />
+        </div>
+        <div>
+          <h1 className="font-display text-lg font-extrabold leading-tight tracking-tight">Maní Aburrá</h1>
+          <p className="text-xs font-medium text-limon-400">Requerimientos y costos</p>
         </div>
       </div>
 
-      {/* Navegación Principal */}
-      <nav className="flex-1 p-4 overflow-y-auto space-y-6">
-        {menuSections.map((section, idx) => (
-          <div key={idx} className="space-y-1">
-            {section.title && (
-              <h2 className="px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                {section.title}
-              </h2>
-            )}
-            {section.items.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    clsx(
-                      'group relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
-                      isActive
-                        ? 'bg-emerald-50/80 text-emerald-700 font-semibold shadow-xs'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    )
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      {/* Borde indicador activo */}
-                      {isActive && (
-                        <span className="absolute left-0 top-2 bottom-2 w-1 bg-emerald-600 rounded-r-full" />
-                      )}
-                      
-                      <Icon
-                        className={clsx(
-                          'w-5 h-5 transition-colors duration-200 shrink-0',
-                          isActive
-                            ? 'text-emerald-600'
-                            : 'text-gray-400 group-hover:text-gray-600'
-                        )}
-                      />
-                      <span className="truncate">{item.label}</span>
-                    </>
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
+      <nav
+        aria-label="Navegación principal"
+        className="flex gap-2 overflow-x-auto px-4 pb-4 md:flex-1 md:flex-col md:overflow-y-auto md:p-4 [scrollbar-width:none]"
+      >
+        {MENU.map(({ to, label, icon: Icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) =>
+              clsx(
+                'flex shrink-0 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold whitespace-nowrap transition-colors duration-150',
+                isActive ? 'bg-limon-400 text-mani-900 shadow-lg shadow-black/20' : 'text-mani-50 hover:bg-white/10',
+              )
+            }
+          >
+            <Icon className="w-5 h-5 shrink-0" aria-hidden="true" />
+            <span>{label}</span>
+          </NavLink>
         ))}
       </nav>
 
-      {/* Footer del Sidebar */}
-      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-        <div className="flex items-center justify-between px-2 text-xs text-gray-500 font-medium">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-gray-600">Sistema activo</span>
-          </div>
-          <span className="text-gray-400 text-[11px] bg-white px-2 py-0.5 rounded border border-gray-200 font-mono">
-            v2.0
+      <div className="hidden md:flex items-center justify-between gap-2 border-t border-white/10 p-4 text-xs font-medium text-mani-50">
+        <span className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-limon-400 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-limon-400" />
           </span>
-        </div>
+          Sistema activo
+        </span>
+        <span className="rounded border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-[11px]">v2.0</span>
       </div>
     </aside>
   );

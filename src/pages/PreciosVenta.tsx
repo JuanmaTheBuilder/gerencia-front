@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { 
-  DollarSign, 
+import {  
   Plus, 
   ToggleRight, 
   AlertCircle, 
@@ -73,23 +72,11 @@ export default function PreciosVenta() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-10">
       {/* Header de la Página */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-gray-100">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80">
-              <DollarSign className="w-6 h-6" />
-            </div>
-            Precios de venta
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Define y gestiona los precios finales con IVA para cada producto y presentación.
-          </p>
-        </div>
-
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 pb-2 border-b border-gray-100">
         {/* Botón Acción Principal */}
         <button
           onClick={openCreate}
-          className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-emerald-600/15 transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 bg-mani-600 hover:bg-mani-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-mani-600/15 transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
           Nuevo precio
@@ -113,7 +100,7 @@ export default function PreciosVenta() {
               header: 'Producto',
               render: (item: PrecioVenta) => (
                 <div className="flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <Tag className="w-4 h-4 text-mani-600 shrink-0" />
                   <span className="font-semibold text-gray-900">
                     {productosMap.get(item.producto_id)?.nombre || `ID ${item.producto_id}`}
                   </span>
@@ -153,12 +140,12 @@ export default function PreciosVenta() {
               render: (item: PrecioVenta) => (
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
                   item.activo 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80' 
+                    ? 'bg-mani-50 text-mani-700 border-mani-200/80' 
                     : 'bg-rose-50 text-rose-700 border-rose-200/80'
                 }`}>
                   {item.activo ? (
                     <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-mani-600" />
                       Activo
                     </>
                   ) : (
@@ -203,7 +190,7 @@ export default function PreciosVenta() {
             <select
               value={formData.producto_id}
               onChange={(e) => setFormData({ ...formData, producto_id: e.target.value })}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
               required
             >
               <option value="">Seleccionar producto...</option>
@@ -217,7 +204,7 @@ export default function PreciosVenta() {
             <select
               value={formData.receta_id}
               onChange={(e) => setFormData({ ...formData, receta_id: e.target.value })}
-              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+              className="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
             >
               <option value="">Todas / General</option>
               {recetas?.map((r: Receta) => (
@@ -235,7 +222,7 @@ export default function PreciosVenta() {
                 min="0"
                 value={formData.precio_con_iva}
                 onChange={(e) => setFormData({ ...formData, precio_con_iva: e.target.value })}
-                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-gray-900 font-mono font-medium focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                className="w-full bg-gray-50/50 border border-gray-200 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-gray-900 font-mono font-medium focus:bg-white focus:ring-2 focus:ring-mani-500/20 focus:border-mani-500 transition-all outline-none"
                 placeholder="0.00"
                 required
               />
@@ -243,8 +230,8 @@ export default function PreciosVenta() {
           </FormField>
 
           {/* Banner informativo de impuesto */}
-          <div className="p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl text-xs text-emerald-800 flex items-start gap-2">
-            <Percent className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="p-3 bg-mani-50/60 border border-mani-100 rounded-xl text-xs text-mani-800 flex items-start gap-2">
+            <Percent className="w-4 h-4 text-mani-600 shrink-0 mt-0.5" />
             <p>
               El IVA aplicado por defecto será del <span className="font-semibold">19%</span>. El sistema calculará automáticamente la base gravable sin IVA.
             </p>
@@ -262,7 +249,7 @@ export default function PreciosVenta() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              className="px-5 py-2 bg-mani-600 hover:bg-mani-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-mani-600/15 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
             >
               {actionLoading ? (
                 <>

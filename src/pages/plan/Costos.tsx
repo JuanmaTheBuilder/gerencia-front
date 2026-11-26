@@ -4,7 +4,7 @@ import { api } from '../../api/client';
 import { useApi } from '../../hooks/useApi';
 import { usePlan } from '../../plan/PlanContext';
 import { conValor, dinero, numero, porcentaje } from '../../plan/format';
-import { Boton, Calc, Card, Leyenda, Num, Pct, TablaAnual, Titulo, Txt } from '../../plan/ui';
+import { Boton, Calc, Card, Leyenda, Num, Pct, TablaAnual, Txt } from '../../plan/ui';
 import Modal from '../../components/Modal';
 import { conIpc, lineaVacia } from '../../plan/helpers';
 import type { LineaAnual } from '../../plan/types';
@@ -71,11 +71,10 @@ export default function Costos() {
 
   return (
     <>
-      <Titulo descripcion="Lo que cuesta producir: materia prima, mano de obra de producción y costos indirectos de fabricación.">4 · Costos</Titulo>
       <div className="flex gap-1 mb-5 border-b border-gray-200">
         {pestanas.map(([k, et]) => (
           <button key={k} onClick={() => setTab(k)}
-            className={`px-4 py-2 text-sm font-medium -mb-px border-b-2 ${tab === k ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>
+            className={`px-4 py-2 text-sm font-medium -mb-px border-b-2 ${tab === k ? 'border-mani-600 text-mani-700' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>
             {et}
           </button>
         ))}
@@ -106,7 +105,7 @@ export default function Costos() {
                       <td className="py-1 w-10"><button title="Quitar" className="p-1.5 text-gray-400 hover:text-red-600" onClick={() => editar((d) => ({ ...d, materias_primas: d.materias_primas.filter((_, k) => k !== i) }))}><Trash2 className="w-4 h-4" /></button></td>
                     </tr>
                   ))}
-                  <tr className="font-semibold bg-emerald-50">
+                  <tr className="font-semibold bg-mani-50">
                     <td className="py-1.5 px-2">TOTAL</td>
                     <td className="py-1.5 pr-2 text-right">{numero(mp?.cantidad_total, 2)}</td><td />
                     <td className="py-1.5 pr-2 text-right">{numero(mp?.costo_und_total, 2)}</td><td />

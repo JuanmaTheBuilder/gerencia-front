@@ -1,6 +1,6 @@
 import { usePlan } from '../../plan/PlanContext';
 import { conValor } from '../../plan/format';
-import { Card, Leyenda, Num, Pct, TablaAnual, Titulo, Txt } from '../../plan/ui';
+import { Card, Leyenda, Num, Pct, TablaAnual, Txt } from '../../plan/ui';
 
 export default function Supuestos() {
   const { datos, editar } = usePlan();
@@ -9,9 +9,6 @@ export default function Supuestos() {
 
   return (
     <>
-      <Titulo descripcion="Datos generales y las tasas que usa todo el plan. Los campos en azul son los que se llenan; el resto se calcula solo.">
-        1 · Datos y supuestos
-      </Titulo>
       <Leyenda />
 
       <Card title="Datos generales">
