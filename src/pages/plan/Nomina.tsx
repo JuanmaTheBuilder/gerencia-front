@@ -44,7 +44,7 @@ const PARAMS_PCT: { k: keyof ParametrosNomina; et: string }[] = [
   { k: 'pct_cesantias', et: 'Cesantías' }, { k: 'pct_prima', et: 'Prima' }, { k: 'pct_vacaciones', et: 'Vacaciones' },
   { k: 'pct_intereses', et: 'Intereses de cesantías' }, { k: 'pct_salud_empleador', et: 'Salud empleador' },
   { k: 'pct_pension_empleador', et: 'Pensión empleador' }, { k: 'pct_caja', et: 'Caja de compensación' },
-  { k: 'pct_icbf', et: 'ICBF (desde 10 SMLV)' }, { k: 'pct_sena', et: 'SENA (desde 10 SMLV)' },
+  { k: 'pct_icbf', et: 'ICBF' }, { k: 'pct_sena', et: 'SENA' },
 ];
 
 export default function Nomina() {
@@ -56,7 +56,7 @@ export default function Nomina() {
 
   const cambiar = (i: number, cambio: Partial<Empleado>) =>
     editar((d) => ({ ...d, empleados: conValor(d.empleados, i, { ...d.empleados[i], ...cambio }) }));
-  const cambiarParam = (k: keyof ParametrosNomina, v: number) =>
+  const cambiarParam = (k: keyof ParametrosNomina, v: number | boolean) =>
     editar((d) => ({ ...d, parametros_nomina: { ...d.parametros_nomina, [k]: v } }));
 
   return (
@@ -184,6 +184,10 @@ export default function Nomina() {
             <Grupo titulo="Porcentajes">
               {PARAMS_PCT.map((x) => <Campo key={x.k} et={x.et}><Pct value={p[x.k] as number} onChange={(v) => cambiarParam(x.k, v)} /></Campo>)}
             </Grupo>
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input type="checkbox" checked={!!p.exonerar_parafiscales} onChange={(ev) => cambiarParam('exonerar_parafiscales', ev.target.checked)} />
+              Aplicar exoneración de ICBF y SENA (salarios menores de 10 SMLV)
+            </label>
             <Grupo titulo="ARL por nivel de riesgo">
               {Object.keys(p.arl).map((r) => (
                 <Campo key={r} et={`Riesgo ${r}`}>
