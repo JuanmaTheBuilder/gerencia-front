@@ -1,17 +1,10 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Printer } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { usePlan } from '../../plan/PlanContext';
-import { dinero, numero, porcentaje } from '../../plan/format';
+import { dinero } from '../../plan/format';
 import { Boton, Card, TablaAnual, type FilaAnual } from '../../plan/ui';
-import { calcularReporteFinanciero, type FilaBalance, type FormatoIndicador, type Valor } from '../../plan/indicadores';
-
-function formatear(v: Valor, formato: FormatoIndicador): string {
-  if (v === null) return "No aplica";
-  if (formato === "pct") return porcentaje(v);
-  if (formato === "veces") return `${numero(v, 2)} veces`;
-  if (formato === "dias") return `${numero(v, 0)} días`;
-  return `$ ${dinero(v)}`;
-}
+import { calcularReporteFinanciero, formatearIndicador, type FilaBalance } from '../../plan/indicadores';
+import { descargarPdfIndicadores } from '../../plan/pdfIndicadores';
 
 function filaBalance(f: FilaBalance): FilaAnual {
   const negrita = f.tipo === "total" || f.tipo === "subtotal";
@@ -25,10 +18,12 @@ function filaBalance(f: FilaBalance): FilaAnual {
   };
 }
 
-/** Reporte de balance general e indicadores, con vista lista para imprimir como PDF. */
+/** Reporte de balance general e indicadores, con descarga directa en PDF. */
 export default function ReporteIndicadores() {
   const { resultados: r, datos } = usePlan();
   const [abierto, setAbierto] = useState(false);
+  const [generando, setGenerando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!r || !datos) {
     return (
@@ -38,8 +33,20 @@ export default function ReporteIndicadores() {
     );
   }
 
-  const rep = calcularReporteFinanciero(r);
+  const rep = calcularReporteFinanciero(r, datos.inversiones);
   const anios = r.anios;
+
+  const descargar = async () => {
+    setGenerando(true);
+    setError(null);
+    try {
+      await descargarPdfIndicadores(datos, rep, anios);
+    } catch {
+      setError('No se pudo generar el PDF. Intenta de nuevo.');
+    } finally {
+      setGenerando(false);
+    }
+  };
 
   return (
     <Card
@@ -51,12 +58,11 @@ export default function ReporteIndicadores() {
           {abierto ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           {abierto ? "Ocultar reporte" : "Ver reporte de indicadores"}
         </Boton>
-        {abierto && (
-          <Boton onClick={() => window.print()}>
-            <Printer className="w-4 h-4" /> Guardar como PDF
-          </Boton>
-        )}
+        <Boton onClick={descargar} disabled={generando}>
+          <Download className="w-4 h-4" /> {generando ? 'Generando PDF…' : 'Descargar PDF'}
+        </Boton>
       </div>
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
 
       {abierto && (
         <div id="reporte-indicadores" className="mt-6 space-y-8">
@@ -95,7 +101,7 @@ export default function ReporteIndicadores() {
                       <span className="block text-xs text-gray-600">{i.que}</span>
                     </span>
                   ),
-                  celda: (t: number) => <span className="font-semibold tabular-nums">{formatear(i.valores[t], i.formato)}</span>,
+                  celda: (t: number) => <span className="font-semibold tabular-nums">{formatearIndicador(i.valores[t], i.formato)}</span>,
                 }))}
               />
             </section>

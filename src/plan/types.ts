@@ -33,6 +33,7 @@ export interface ParametrosNomina {
   pct_caja: number;
   pct_icbf: number;
   pct_sena: number;
+  exonerar_parafiscales?: boolean;
   arl: Record<string, number>;
 }
 

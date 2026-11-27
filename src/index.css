@@ -84,35 +84,3 @@ textarea:focus-visible {
   }
 }
 
-/* Reporte de indicadores: al imprimir solo queda el reporte, en blanco y sin saltos dentro de un bloque */
-@media print {
-  @page {
-    size: A4;
-    margin: 12mm;
-  }
-
-  body * {
-    visibility: hidden !important;
-  }
-
-  #reporte-indicadores,
-  #reporte-indicadores * {
-    visibility: visible !important;
-  }
-
-  #reporte-indicadores {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    background: #ffffff;
-  }
-
-  .reporte-bloque {
-    break-inside: avoid;
-  }
-
-  #reporte-indicadores button {
-    display: none !important;
-  }
-}

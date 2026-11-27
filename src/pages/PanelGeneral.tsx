@@ -54,7 +54,8 @@ export default function PanelGeneral() {
   const insumos = useApi(api.insumos.list);
   const recursos = useApi(api.recursos.list);
 
-  const inversionTotal = datos ? datos.inversiones.reduce((s, i) => s + i.valor, 0) : 0;
+  // Inversión total = activos + capital de trabajo de 3 meses (mismo cálculo que la pantalla de Inversiones)
+  const inversionTotal = r ? r.inversion.total : null;
   const ultimo = r ? r.anios.length - 1 : -1;
   const vpnPositivo = r ? r.evaluacion.vpn >= 0 : false;
 
@@ -82,7 +83,7 @@ export default function PanelGeneral() {
                 {datos.producto ? ` · ${datos.producto}` : ""}
               </p>
               <div className="grid grid-cols-2 gap-3">
-                <Dato etiqueta="Inversión total" valor={`$ ${dinero(inversionTotal)}`} />
+                <Dato etiqueta="Inversión total" valor={inversionTotal === null ? "…" : `$ ${dinero(inversionTotal)}`} />
                 <Dato etiqueta="Años proyectados" valor={String(datos.n_anios)} />
               </div>
             </>
